@@ -24,24 +24,21 @@ class MySQLDatabase:
                 database=self.database
             )
             self.cursor = self.connection.cursor()
-            print("Connected to MySQL database!")
         except mysql.connector.Error as e:
             print(f"Error connecting to MySQL: {e}")
     
     def disconnect(self):
         if self.connection:
             self.connection.close()
-            print("Disconnected from MySQL database.")
     
     def execute_query(self, query, values=None):
         try:
             self.cursor.execute(query, values)
             self.connection.commit()
-            print("Query executed successfully.")
-            return self.cursor.fetchall()
+            return True
         except mysql.connector.Error as e:
             print(f"Error executing query: {e}")
-            return None
+            return False
     
     def select_query(self, query):
         try:
@@ -62,5 +59,3 @@ class MySQLDatabase:
     
     def delete_query(self, query, values):
         return self.execute_query(query, values)
-
-# Example usage remains the same as previously shown
