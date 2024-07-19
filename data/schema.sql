@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 16, 2024 at 03:55 PM
+-- Generation Time: Jul 19, 2024 at 10:56 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -78,7 +78,26 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `name`, `password`, `is_admin`, `create_date`) VALUES
-(1, 'admin', 'Yousif Dahabra', '12345678', 1, '2024-07-16');
+(1, 'admin', 'Yousif Dahabra', '12345678', 1, '2024-07-16'),
+(14, 'ali556978', 'ali ahmed', '5443345345', 0, '2024-07-17'),
+(15, 'ali5569782', 'ali ahmed2', '5443345345', 0, '2024-07-17'),
+(16, 'ali5569784', 'ali ahmed4', '5443345345', 0, '2024-07-17'),
+(17, 'ali5569785', 'ali ahmed5', '5443345345', 0, '2024-07-17'),
+(23, 'from_user1', 'ali ahmed5', '5443345345', 0, '2024-07-19'),
+(24, 'to_user2', 'ali ahmed7', '5443345345', 0, '2024-07-19');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_followers`
+--
+
+CREATE TABLE `user_followers` (
+  `follow_id` int(11) NOT NULL,
+  `from_user` varchar(255) DEFAULT NULL,
+  `to_user` varchar(255) DEFAULT NULL,
+  `craete_date` date DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
@@ -112,6 +131,13 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `username` (`username`);
 
 --
+-- Indexes for table `user_followers`
+--
+ALTER TABLE `user_followers`
+  ADD PRIMARY KEY (`follow_id`),
+  ADD UNIQUE KEY `followers` (`from_user`,`to_user`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -125,7 +151,13 @@ ALTER TABLE `clubs`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+
+--
+-- AUTO_INCREMENT for table `user_followers`
+--
+ALTER TABLE `user_followers`
+  MODIFY `follow_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
