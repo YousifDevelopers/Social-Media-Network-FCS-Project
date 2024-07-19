@@ -16,13 +16,6 @@ class Users:
         self.db.disconnect()
         return result
 
-    def delete_user(self, username):
-        self.db.connect()
-        query = "DELETE FROM users where username = %s"
-        values = (username,)
-        result = self.db.insert_query(query, values)
-        self.db.disconnect()
-        return result
     def update_user(self, username, user_info: dict):
         self.db.connect()
         query = "UPDATE users SET name = %s, password = %s, is_admin = %s WHERE username = %s"
@@ -30,3 +23,29 @@ class Users:
         result = self.db.update_query(query, values)
         self.db.disconnect()
         return result
+
+    def delete_user(self, username):
+        self.db.connect()
+        query = "DELETE FROM users where username = %s"
+        values = (username,)
+        result = self.db.delete_query(query, values)
+        self.db.disconnect()
+        return result
+
+    def select_user(self,username = ''):
+        self.db.connect()
+        where = ''
+        if(username != ''):
+            where = f'where username = "{username}"'
+        
+        query = f"SELECT * FROM users {where} "
+        result = self.db.select_query(query)
+        self.db.disconnect()
+        return result
+
+    def count_user(self):
+        self.db.connect()
+        query = "SELECT * FROM users  "
+        result = self.db.select_query(query)
+        self.db.disconnect()
+        return len(result)

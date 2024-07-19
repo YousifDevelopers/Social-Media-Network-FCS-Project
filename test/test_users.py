@@ -31,7 +31,27 @@ def test_delete_user():
     else:
         print("falid delete user")
 
+def test_select_user():
+
+    result = user_manager.select_user('ali556978676')
+    if(result):
+        print("your user info")
+        print(result)
+    else:
+        print("falid delete user")
+def test_count_user():
+
+    result = user_manager.count_user()
+    if(result):
+        print("the number of users")
+        print(result)
+    else:
+        print("falid delete user")
+
+
 if __name__ == "__main__":
     test_add_user()
+    test_select_user()
     test_update_user()
+    test_count_user()
     test_delete_user()
