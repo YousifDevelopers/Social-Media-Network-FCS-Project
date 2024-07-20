@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 19, 2024 at 10:56 PM
+-- Generation Time: Jul 20, 2024 at 11:16 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,7 +31,8 @@ CREATE TABLE `clubs` (
   `club_id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
-  `create_date` date DEFAULT current_timestamp()
+  `create_date` date DEFAULT current_timestamp(),
+  `club_code` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -107,7 +108,8 @@ CREATE TABLE `user_followers` (
 -- Indexes for table `clubs`
 --
 ALTER TABLE `clubs`
-  ADD PRIMARY KEY (`club_id`);
+  ADD PRIMARY KEY (`club_id`),
+  ADD UNIQUE KEY `clube_code` (`club_code`);
 
 --
 -- Indexes for table `club_memberships`
@@ -145,7 +147,7 @@ ALTER TABLE `user_followers`
 -- AUTO_INCREMENT for table `clubs`
 --
 ALTER TABLE `clubs`
-  MODIFY `club_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `club_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `users`
