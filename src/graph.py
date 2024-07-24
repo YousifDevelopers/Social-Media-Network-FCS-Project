@@ -22,3 +22,11 @@ class Graph:
             for neighbour in self.adjacency_list[node]:
                 self.adjacency_list[neighbour].remove(node)
             del self.adjacency_list[node]
+    def get_nodes(self):
+        return list(self.adjacency_list.keys())
+    
+    def get_neighbours(self, node):
+        return self.adjacency_list.get(node, [])
+
+    def __str__(self):
+        return str(self.adjacency_list)
