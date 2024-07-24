@@ -1,3 +1,6 @@
+import networkx as nx
+from pyvis.network import Network
+
 class Graph:
     def __init__(self):
         self.adjacency_list = {}
@@ -30,3 +33,10 @@ class Graph:
 
     def __str__(self):
         return str(self.adjacency_list)
+    def to_networkx(self):
+        G = nx.Graph()
+        for node in self.adjacency_list:
+            G.add_node(node)
+            for neighbour in self.adjacency_list[node]:
+                G.add_edge(node, neighbour)
+        return G
