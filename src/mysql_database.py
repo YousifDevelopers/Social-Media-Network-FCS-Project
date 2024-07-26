@@ -44,9 +44,11 @@ class MySQLDatabase:
         try:
             cursor = self.connection.cursor()
             cursor.execute(query)
+            columns = cursor.column_names
             result = cursor.fetchall()
             cursor.close()
-            return result
+            dict_result = [dict(zip(columns, row)) for row in result]
+            return dict_result
         except Exception as e:
             print(f"Error executing query: {e}")
             return None
