@@ -72,3 +72,36 @@ class Graph:
                         stack.append(neighbour)
         
         return result
+    
+    def dijkstra(self, start_node, target_node):
+        distances = {node: float('infinity') for node in self.adjacency_list}
+        distances[start_node] = 0
+        priority_queue = [(0, start_node)]
+        previous_nodes = {node: None for node in self.adjacency_list}
+        
+        while priority_queue:
+            current_distance, current_node = heapq.heappop(priority_queue)
+            
+            if current_distance > distances[current_node]:
+                continue
+            
+            for neighbour, weight in self.adjacency_list[current_node]:
+                distance = current_distance + weight
+                
+                if distance < distances[neighbour]:
+                    distances[neighbour] = distance
+                    previous_nodes[neighbour] = current_node
+                    heapq.heappush(priority_queue, (distance, neighbour))
+        
+        path = []
+        current_node = target_node
+        
+        while previous_nodes[current_node] is not None:
+            path.append(current_node)
+            current_node = previous_nodes[current_node]
+        
+        if path:
+            path.append(start_node)
+        
+        path.reverse()
+        return path
