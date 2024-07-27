@@ -35,7 +35,31 @@ class MainApp(ctk.CTk):
         
         self.login_button = ctk.CTkButton(self.login_frame, text="Login", command=self.login)
         self.login_button.pack(pady=10)
-            
+        
+        self.register_button = ctk.CTkButton(self.login_frame, text="Register", command=self.show_register_page)
+        self.register_button.pack(pady=10)
+    
+    def show_register_page(self):
+        self.clear_page()
+        
+        self.register_frame = ctk.CTkFrame(self)
+        self.register_frame.pack(expand=True, fill='both')
+        
+        self.reg_username = ctk.CTkEntry(self.register_frame, placeholder_text="Username")
+        self.reg_username.pack(pady=10)
+        
+        self.reg_password = ctk.CTkEntry(self.register_frame, placeholder_text="Password", show="*")
+        self.reg_password.pack(pady=10)
+        
+        self.reg_name = ctk.CTkEntry(self.register_frame, placeholder_text="Name")
+        self.reg_name.pack(pady=10)
+        
+        self.register_button = ctk.CTkButton(self.register_frame, text="Register", command=self.register)
+        self.register_button.pack(pady=10)
+        
+        self.back_button = ctk.CTkButton(self.register_frame, text="Back to Login", command=self.show_login_page)
+        self.back_button.pack(pady=10)
+    
     def login(self):
         username = self.username.get()
         password = self.password.get()
@@ -52,6 +76,22 @@ class MainApp(ctk.CTk):
         else:
             messagebox.showerror("Login Failed", response['Message'])
 
+    def register(self):
+        username = self.reg_username.get()
+        password = self.reg_password.get()
+        name = self.reg_name.get()
+        values = {'username':username, "name":name, "password":password, "is_admin":0}
+        user = Users()
+        if user.add_user(values):
+            messagebox.showinfo("Success", "Registration successful. Please log in.")
+            self.show_login_page()
+        else:
+            messagebox.showerror("Error", "Registration failed")
+        
+        # For now, let's just print username, password, and name
+        print(f"Username: {username}, Password: {password}, Name: {name}")
+        self.show_login_page()  # Just for testing
+        
     def clear_page(self):
         for widget in self.winfo_children():
             widget.destroy()
