@@ -105,3 +105,25 @@ class Graph:
         
         path.reverse()
         return path
+    
+    def connected_components(self):
+        visited = set()
+        components = []
+
+        for node in self.adjacency_list:
+            if node not in visited:
+                component = []
+                queue = deque([node])
+
+                while queue:
+                    current_node = queue.popleft()
+                    if current_node not in visited:
+                        visited.add(current_node)
+                        component.append(current_node)
+                        for neighbour, _ in self.adjacency_list[current_node]:
+                            if neighbour not in visited:
+                                queue.append(neighbour)
+
+                components.append(component)
+
+        return components
