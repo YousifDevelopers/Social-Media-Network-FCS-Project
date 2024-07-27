@@ -40,3 +40,19 @@ class Graph:
             for neighbour in self.adjacency_list[node]:
                 G.add_edge(node, neighbour)
         return G
+
+    def bfs(self, start_node):
+        visited = set()
+        queue = [start_node]
+        result = []
+        
+        while queue:
+            node = queue.pop(0)
+            if node not in visited:
+                visited.add(node)
+                result.append(node)
+                for neighbour, _ in self.adjacency_list[node]:
+                    if neighbour not in visited:
+                        queue.append(neighbour)
+        
+        return result
