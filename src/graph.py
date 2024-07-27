@@ -56,3 +56,19 @@ class Graph:
                         queue.append(neighbour)
         
         return result
+    
+    def dfs(self, start_node):
+        visited = set()
+        stack = [start_node]
+        result = []
+        
+        while stack:
+            node = stack.pop()
+            if node not in visited:
+                visited.add(node)
+                result.append(node)
+                for neighbour, _ in self.adjacency_list[node]:
+                    if neighbour not in visited:
+                        stack.append(neighbour)
+        
+        return result
