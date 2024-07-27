@@ -1,5 +1,6 @@
 import sys
 import os
+import bcrypt
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from .mysql_database import MySQLDatabase
@@ -10,6 +11,7 @@ class Users:
 
     def add_user(self, user_info: dict):
         self.db.connect()
+        user_info['password'] = self.hash_password(user_info['password'])
         query = "INSERT INTO users (username, name, password, is_admin) VALUES (%s, %s, %s, %s)"
         values = (user_info['username'], user_info['name'], user_info['password'], user_info['is_admin'])
         result = self.db.insert_query(query, values)
@@ -49,3 +51,11 @@ class Users:
         result = self.db.select_query(query)
         self.db.disconnect()
         return len(result)
+    
+    def hash_password(self,password: str) -> str:
+        salt = bcrypt.gensalt()
+        hashed = bcrypt.hashpw(password.encode(), salt)
+        return hashed.decode()
+    
+    def verify_password(self,stored_password: str, provided_password: str) -> bool:
+        return bcrypt.checkpw(provided_password.encode(), stored_password.encode())
