@@ -52,6 +52,20 @@ class Users:
         self.db.disconnect()
         return len(result)
     
+    def login(self,username,password):
+        self.db.connect() 
+        query = f"SELECT * FROM users where username = '{username}' "
+        result = self.db.select_query(query)
+        if(len(result) == 0):
+            return {"login":False,"Message":"Username not found"}
+        user_info = result[0]
+        self.db.disconnect()
+        check_password = self.verify_password(user_info['password'],password)
+        if(check_password):
+            return {"login":True,"Message":"","is_admin":user_info['is_admin']}
+        else:
+            return {"login":False,"Message":"Password not match"}
+    
     def hash_password(self,password: str) -> str:
         salt = bcrypt.gensalt()
         hashed = bcrypt.hashpw(password.encode(), salt)
