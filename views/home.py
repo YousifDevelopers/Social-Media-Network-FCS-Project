@@ -17,7 +17,8 @@ class MainApp(ctk.CTk):
         self.title("Social Network")
         self.geometry("800x600")
         ctk.set_appearance_mode("dark")
-
+        self.is_login = False
+        self.user_info = {}
         self.current_page = None
         self.show_login_page()
     
@@ -66,14 +67,16 @@ class MainApp(ctk.CTk):
         
         user = Users()
         response = user.login(username, password)
-        print('response')
-        print(response)
         if response['login']:
+            self.is_login = True
+            self.user_info = response['user_info']
             if response['is_admin']:
                 self.show_admin_page()
             else:
                 self.show_user_page()
         else:
+            self.is_login = False
+            self.user_info = {}
             messagebox.showerror("Login Failed", response['Message'])
 
     def register(self):
@@ -88,9 +91,49 @@ class MainApp(ctk.CTk):
         else:
             messagebox.showerror("Error", "Registration failed")
         
-        # For now, let's just print username, password, and name
-        print(f"Username: {username}, Password: {password}, Name: {name}")
-        self.show_login_page()  # Just for testing
+        self.show_login_page() 
+        
+    def show_admin_page(self):
+        self.clear_page()
+        
+        self.admin_frame = ctk.CTkFrame(self)
+        self.admin_frame.pack(expand=True, fill='both')
+        
+        self.update_profile_button = ctk.CTkButton(self.admin_frame, text="Update Profile", command=self.show_profile_page)
+        self.update_profile_button.pack(pady=10)
+        
+        self.logout_button = ctk.CTkButton(self.admin_frame, text="Logout", command=self.logout)
+        self.logout_button.pack(pady=10)
+    
+    def show_profile_page(self):
+        self.clear_page()
+        
+        self.profile_frame = ctk.CTkFrame(self)
+        self.profile_frame.pack(expand=True, fill='both')
+        
+        self.pro_username = ctk.CTkEntry(self.profile_frame, placeholder_text="Username")
+        self.pro_username.pack(pady=10)
+        username_value = self.user_info['username']
+        self.pro_username.insert(0, username_value) 
+        self.pro_username.configure(state='disabled')
+        
+        
+        self.pro_name = ctk.CTkEntry(self.profile_frame, placeholder_text="Name")
+        self.pro_name.pack(pady=10)
+        name_value = self.user_info['name']
+        self.pro_name.insert(0, name_value)
+        
+        
+        self.pro_password = ctk.CTkEntry(self.profile_frame, placeholder_text="Password", show="*")
+        self.pro_password.pack(pady=10)
+
+        self.profile_button = ctk.CTkButton(self.profile_frame, text="Profile", command=self.update_profile)
+        self.profile_button.pack(pady=10)
+        if(self.user_info['is_admin'] == 0):
+            self.back_button = ctk.CTkButton(self.profile_frame, text="Back to User Page", command=self.show_user_page)
+        else:
+            self.back_button = ctk.CTkButton(self.profile_frame, text="Back to Admin Page", command=self.show_admin_page)
+        self.back_button.pack(pady=10)
         
     def clear_page(self):
         for widget in self.winfo_children():
