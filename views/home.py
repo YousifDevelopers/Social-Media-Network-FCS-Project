@@ -109,7 +109,7 @@ class MainApp(ctk.CTk):
         
         back_button = ctk.CTkButton(self.statistics_frame, text="Back to Admin Page", command=self.show_admin_page)
         back_button.pack(pady=10)
-
+        
     def show_admin_page(self):
         self.clear_page()
         
@@ -121,9 +121,12 @@ class MainApp(ctk.CTk):
         
         self.statistics_button = ctk.CTkButton(self.admin_frame, text="Statistics", command=self.show_statistics_page)
         self.statistics_button.pack(pady=10)
-    
+
         self.manage_users_button = ctk.CTkButton(self.admin_frame, text="Manage Users", command=self.show_manage_users_page)
         self.manage_users_button.pack(pady=10)
+        
+        self.manage_clubs_button = ctk.CTkButton(self.admin_frame, text="Manage Clubs", command=self.show_manage_clubs_page)
+        self.manage_clubs_button.pack(pady=10)
         
         self.logout_button = ctk.CTkButton(self.admin_frame, text="Logout", command=self.logout)
         self.logout_button.pack(pady=10)
@@ -202,6 +205,32 @@ class MainApp(ctk.CTk):
                 self.show_manage_users_page()
             else:
                 messagebox.showerror("Error", f"Failed to delete user {username}.")
+                
+    def show_manage_clubs_page(self):
+        self.clear_page()
+        
+        self.manage_clubs_frame = ctk.CTkFrame(self)
+        self.manage_clubs_frame.pack(expand=True, fill='both')
+        clubs = Clubs()
+
+        clubs_info = clubs.select_club()
+        
+        for club in clubs_info:
+            club_frame = ctk.CTkFrame(self.manage_clubs_frame)
+            club_frame.pack(pady=5, padx=10, fill='x')
+            
+            name_label = ctk.CTkLabel(club_frame, text=club['name'])
+            name_label.pack(side='left', padx=10)
+            
+            delete_button = ctk.CTkButton(club_frame, text="Delete", command=lambda club_code=club['club_code']: self.delete_club(club_code))
+            delete_button.pack(side='right', padx=10)
+
+            update_button = ctk.CTkButton(club_frame, text="Update", command=lambda club_code=club['club_code']: self.update_club_page(club_code))
+            update_button.pack(side='right', padx=10)
+        
+        back_button = ctk.CTkButton(self.manage_users_frame, text="Back to Admin Page", command=self.show_admin_page)
+        back_button.pack(pady=10)
+
 
     def logout(self):
         self.is_login = False
