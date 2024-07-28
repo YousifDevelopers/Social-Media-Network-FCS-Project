@@ -109,7 +109,31 @@ class MainApp(ctk.CTk):
         
         back_button = ctk.CTkButton(self.statistics_frame, text="Back to Admin Page", command=self.show_admin_page)
         back_button.pack(pady=10)
+    
+    def show_user_page(self):
+        self.clear_page()
         
+        self.user_frame = ctk.CTkFrame(self)
+        self.user_frame.pack(expand=True, fill='both')
+        
+        self.update_profile_button = ctk.CTkButton(self.user_frame, text="Update Profile", command=self.show_profile_page)
+        self.update_profile_button.pack(pady=10)
+        
+        self.join_club_button = ctk.CTkButton(self.user_frame, text="Join Club", command=self.join_club)
+        self.join_club_button.pack(pady=10)
+        
+        self.follow_user_button = ctk.CTkButton(self.user_frame, text="Follow User", command=self.follow_user)
+        self.follow_user_button.pack(pady=10)
+        
+        self.add_club_button = ctk.CTkButton(self.user_frame, text="Add Club", command=self.add_club)
+        self.add_club_button.pack(pady=10)
+        
+        self.stats_button = ctk.CTkButton(self.user_frame, text="Statistics", command=self.show_statistics)
+        self.stats_button.pack(pady=10)
+        
+        self.logout_button = ctk.CTkButton(self.user_frame, text="Logout", command=self.logout)
+        self.logout_button.pack(pady=10)
+    
     def show_admin_page(self):
         self.clear_page()
         
@@ -153,7 +177,7 @@ class MainApp(ctk.CTk):
         self.pro_password = ctk.CTkEntry(self.profile_frame, placeholder_text="Password", show="*")
         self.pro_password.pack(pady=10)
 
-        self.profile_button = ctk.CTkButton(self.profile_frame, text="Profile", command=self.update_profile)
+        self.profile_button = ctk.CTkButton(self.profile_frame, text="Update Profile", command=self.update_profile)
         self.profile_button.pack(pady=10)
         if(self.user_info['is_admin'] == 0):
             self.back_button = ctk.CTkButton(self.profile_frame, text="Back to User Page", command=self.show_user_page)
@@ -228,9 +252,59 @@ class MainApp(ctk.CTk):
             update_button = ctk.CTkButton(club_frame, text="Update", command=lambda club_code=club['club_code']: self.update_club_page(club_code))
             update_button.pack(side='right', padx=10)
         
-        back_button = ctk.CTkButton(self.manage_users_frame, text="Back to Admin Page", command=self.show_admin_page)
+        back_button = ctk.CTkButton(self.manage_clubs_frame, text="Back to Admin Page", command=self.show_admin_page)
         back_button.pack(pady=10)
 
+    def delete_club(self, club_code):
+        confirm = messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete club {club_code}?")
+        if confirm:
+            clubs = Clubs()
+            result = clubs.delete_club(club_code)
+            if result:
+                messagebox.showinfo("Success", f"Club {club_code} deleted successfully.")
+                self.show_manage_clubs_page()
+            else:
+                messagebox.showerror("Error", f"Failed to delete Club {club_code}.")
+                
+    def update_club_page(self,club_code):
+        clubs = Clubs()
+
+        clubs_info = clubs.select_club(club_code)[0]
+
+        self.clear_page()
+        
+        self.update_club_frame = ctk.CTkFrame(self)
+        self.update_club_frame.pack(expand=True, fill='both')
+        
+        self.clu_club_code = ctk.CTkEntry(self.update_club_frame)
+        self.clu_club_code.pack(pady=10)
+        self.clu_club_code.insert(0, clubs_info['club_code']) 
+        self.clu_club_code.configure(state='disabled')
+        
+        
+        self.clu_club_name = ctk.CTkEntry(self.update_club_frame, placeholder_text="Name")
+        self.clu_club_name.pack(pady=10)
+        self.clu_club_name.insert(0, clubs_info['name'])
+
+        self.clu_club_description = ctk.CTkEntry(self.update_club_frame, placeholder_text="Description")
+        self.clu_club_description.pack(pady=10)
+        self.clu_club_description.insert(0, clubs_info['description'])
+        
+        self.profile_button = ctk.CTkButton(self.update_club_frame, text="Update Club", command=self.update_club)
+        self.profile_button.pack(pady=10)
+        self.back_button = ctk.CTkButton(self.update_club_frame, text="Back to Clubs Page", command=self.show_manage_clubs_page)
+        self.back_button.pack(pady=10)
+        
+    def update_club(self):
+        name = self.clu_club_name.get()
+        description = self.clu_club_description.get()
+        code = self.clu_club_code.get()
+        values = { "name":name, "description":description}
+        clubs = Clubs()
+        if clubs.update_club(code,values):
+            messagebox.showinfo("Success", "Update Club successful.")
+        else:
+            messagebox.showerror("Error", "Update Club failed")
 
     def logout(self):
         self.is_login = False
