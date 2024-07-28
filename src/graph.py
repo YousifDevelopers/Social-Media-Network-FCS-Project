@@ -1,5 +1,6 @@
 import networkx as nx
-from pyvis.network import Network
+import heapq
+from collections import deque
 
 class Graph:
     def __init__(self):
@@ -13,6 +14,7 @@ class Graph:
         if node1 in self.adjacency_list and node2 in self.adjacency_list:
             self.adjacency_list[node1].append(node2)
             self.adjacency_list[node2].append(node1)
+    
     def remove_edge(self, node1, node2):
         if node1 in self.adjacency_list and node2 in self.adjacency_list:
             if node2 in self.adjacency_list[node1]:
@@ -25,6 +27,7 @@ class Graph:
             for neighbour in self.adjacency_list[node]:
                 self.adjacency_list[neighbour].remove(node)
             del self.adjacency_list[node]
+    
     def get_nodes(self):
         return list(self.adjacency_list.keys())
     
@@ -33,6 +36,7 @@ class Graph:
 
     def __str__(self):
         return str(self.adjacency_list)
+    
     def to_networkx(self):
         G = nx.Graph()
         for node in self.adjacency_list:
@@ -43,15 +47,15 @@ class Graph:
 
     def bfs(self, start_node):
         visited = set()
-        queue = [start_node]
+        queue = deque([start_node])
         result = []
         
         while queue:
-            node = queue.pop(0)
+            node = queue.popleft()
             if node not in visited:
                 visited.add(node)
                 result.append(node)
-                for neighbour, _ in self.adjacency_list[node]:
+                for neighbour in self.adjacency_list[node]:
                     if neighbour not in visited:
                         queue.append(neighbour)
         
@@ -67,7 +71,7 @@ class Graph:
             if node not in visited:
                 visited.add(node)
                 result.append(node)
-                for neighbour, _ in self.adjacency_list[node]:
+                for neighbour in self.adjacency_list[node]:
                     if neighbour not in visited:
                         stack.append(neighbour)
         
@@ -85,8 +89,8 @@ class Graph:
             if current_distance > distances[current_node]:
                 continue
             
-            for neighbour, weight in self.adjacency_list[current_node]:
-                distance = current_distance + weight
+            for neighbour in self.adjacency_list[current_node]:
+                distance = current_distance + 1
                 
                 if distance < distances[neighbour]:
                     distances[neighbour] = distance
@@ -120,7 +124,7 @@ class Graph:
                     if current_node not in visited:
                         visited.add(current_node)
                         component.append(current_node)
-                        for neighbour, _ in self.adjacency_list[current_node]:
+                        for neighbour in self.adjacency_list[current_node]:
                             if neighbour not in visited:
                                 queue.append(neighbour)
 

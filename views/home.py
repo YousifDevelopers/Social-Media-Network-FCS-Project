@@ -127,7 +127,7 @@ class MainApp(ctk.CTk):
         self.follow_user_button = ctk.CTkButton(self.user_frame, text="Follow User", command=self.show_follow_user_page)
         self.follow_user_button.pack(pady=10)
                 
-        self.already_follow_user_button = ctk.CTkButton(self.user_frame, text="Follow User", command=self.show_already_follow_user_page)
+        self.already_follow_user_button = ctk.CTkButton(self.user_frame, text="Following User", command=self.show_already_follow_user_page)
         self.already_follow_user_button.pack(pady=10)
 
         # self.stats_button = ctk.CTkButton(self.user_frame, text="Statistics", command=self.show_statistics)
@@ -545,11 +545,21 @@ class MainApp(ctk.CTk):
             
             name_label = ctk.CTkLabel(already_user_follow_frame, text=user_follow['to_user'])
             name_label.pack(side='left', padx=10)
-            user_join_club = ctk.CTkButton(already_user_follow_frame, text="Un Follow user", command=lambda to_user=user_follow['to_user']: self.user_follow(to_user))
+            user_join_club = ctk.CTkButton(already_user_follow_frame, text="Un Follow user", command=lambda to_user=user_follow['to_user']: self.user_un_follow(to_user))
             user_join_club.pack(side='right', padx=10)
         
         back_user_list_button = ctk.CTkButton(self.already_follow_user_frame, text="Back to User Page", command=self.show_user_page)
         back_user_list_button.pack(pady=10)
+    
+    def user_un_follow(self,to_user):
+        user_follow = UserFollow()
+        result = user_follow.un_follow_user(self.user_info['username'],to_user)
+        if result:
+            messagebox.showinfo("Success", 'Unfollow user successful')
+        else:
+            messagebox.showerror("Error", "Unfollow user failed")
+            
+        self.show_already_follow_user_page()
 
 if __name__ == "__main__":
     app = MainApp()
