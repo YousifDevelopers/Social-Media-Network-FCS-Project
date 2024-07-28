@@ -458,23 +458,13 @@ class MainApp(ctk.CTk):
 
     def show_follow_user_page(self):
         self.clear_page()
-        
-        # Create a canvas and a scrollbar
         self.canvas = tk.Canvas(self, borderwidth=0)
         self.scrollbar = tk.Scrollbar(self, orient='vertical', command=self.canvas.yview)
-        
-        # Create a frame to hold the user clubs content
         self.follow_user_frame = ctk.CTkFrame(self.canvas)
-        
-        # Add the follow_user_frame to the canvas
         self.canvas.create_window((0, 0), window=self.follow_user_frame, anchor='nw')
         self.follow_user_frame.bind('<Configure>', self.on_frame_configure)
-        
-        # Pack the canvas and scrollbar
         self.canvas.pack(side='left', fill='both', expand=True)
         self.scrollbar.pack(side='right', fill='y')
-        
-        # Configure canvas and scrollbar
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.canvas.yview)
 
