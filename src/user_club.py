@@ -59,3 +59,13 @@ class UserClub:
         result = self.db.select_query(query)
         self.db.disconnect()
         return result
+
+    def is_user_join_club(self,username,club_code):
+        self.db.connect()
+        where = ''
+        if(username == ''):
+            return
+        query = f"SELECT * FROM user_club  where username = '{username}' and  club_code = '{club_code}' "
+        result = self.db.select_query(query)
+        self.db.disconnect()
+        return len(result) > 0 
