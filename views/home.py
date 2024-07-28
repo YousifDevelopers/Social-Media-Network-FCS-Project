@@ -503,6 +503,15 @@ class MainApp(ctk.CTk):
         back_user_clubs_list_button = ctk.CTkButton(self.follow_user_frame, text="Back to User Page", command=self.show_user_page)
         back_user_clubs_list_button.pack(pady=10)
     
+    def user_follow(self,to_user):
+        user_follow = UserFollow()
+        result = user_follow.follow_user(self.user_info['username'],to_user)
+        if result:
+            messagebox.showinfo("Success", 'follow user successful')
+        else:
+            messagebox.showerror("Error", "follow user failed")
+            
+        self.show_follow_user_page()
 
 if __name__ == "__main__":
     app = MainApp()

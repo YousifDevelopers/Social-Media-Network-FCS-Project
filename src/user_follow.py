@@ -68,9 +68,14 @@ class UserFollow:
         query = f"""SELECT DISTINCT uf2.to_user AS suggested_user
 FROM user_followers uf1
 JOIN user_followers uf2 ON uf1.to_user = uf2.from_user
+LEFT JOIN user_followers uf3 ON uf2.to_user = uf3.to_user AND uf3.from_user = '{from_user}'
 WHERE uf1.from_user = '{from_user}'
-  AND uf2.to_user != '{from_user}';
+  AND uf2.to_user != '{from_user}'
+  AND uf3.to_user IS NULL;
+;
  """
+ 
+ 
         result = self.db.select_query(query)
         self.db.disconnect()
         return result
