@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 import customtkinter as ctk
+import webbrowser
+
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -119,17 +121,14 @@ class MainApp(ctk.CTk):
         self.update_profile_button = ctk.CTkButton(self.user_frame, text="Update Profile", command=self.show_profile_page)
         self.update_profile_button.pack(pady=10)
         
-        self.join_club_button = ctk.CTkButton(self.user_frame, text="Join Club", command=self.join_club)
+        self.join_club_button = ctk.CTkButton(self.user_frame, text="Join Club", command=self.show_user_clubs_page)
         self.join_club_button.pack(pady=10)
         
-        self.follow_user_button = ctk.CTkButton(self.user_frame, text="Follow User", command=self.follow_user)
-        self.follow_user_button.pack(pady=10)
-        
-        self.add_club_page_button = ctk.CTkButton(self.user_frame, text="Add Club", command=self.add_club)
-        self.add_club_page_button.pack(pady=10)
-        
-        self.stats_button = ctk.CTkButton(self.user_frame, text="Statistics", command=self.show_statistics)
-        self.stats_button.pack(pady=10)
+        # self.follow_user_button = ctk.CTkButton(self.user_frame, text="Follow User", command=self.follow_user)
+        # self.follow_user_button.pack(pady=10)
+                
+        # self.stats_button = ctk.CTkButton(self.user_frame, text="Statistics", command=self.show_statistics)
+        # self.stats_button.pack(pady=10)
         
         self.logout_button = ctk.CTkButton(self.user_frame, text="Logout", command=self.logout)
         self.logout_button.pack(pady=10)
@@ -152,6 +151,12 @@ class MainApp(ctk.CTk):
         self.manage_clubs_button = ctk.CTkButton(self.admin_frame, text="Manage Clubs", command=self.show_manage_clubs_page)
         self.manage_clubs_button.pack(pady=10)
         
+        self.show_club_followers = ctk.CTkButton(self.admin_frame, text="Show club followers network", command=self.open_clubs_graph_network)
+        self.show_club_followers.pack(pady=10)
+
+        self.show_user_followers = ctk.CTkButton(self.admin_frame, text="Show users followers network", command=self.open_user_fllowers_graph_network)
+        self.show_user_followers.pack(pady=10)
+
         self.logout_button = ctk.CTkButton(self.admin_frame, text="Logout", command=self.logout)
         self.logout_button.pack(pady=10)
     
@@ -332,6 +337,70 @@ class MainApp(ctk.CTk):
     def clear_page(self):
         for widget in self.winfo_children():
             widget.destroy()
+
+    def open_clubs_graph_network(self):
+        clus_user_network = SocialNetwork()
+        clus_user_network.user_club_network()
+
+        html_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'network_graph', "club_followers_network.html"))
+
+        if os.path.exists(html_file_path):
+            webbrowser.open_new_tab(f"file://{html_file_path}")
+        else:
+            messagebox.showerror("Error", f"File not found: {html_file_path}")
+            
+    def open_user_fllowers_graph_network(self):
+        follow_user_network = SocialNetwork()
+        follow_user_network.user_follow_network()
+
+        html_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'network_graph', "user_follow_network.html"))
+
+        if os.path.exists(html_file_path):
+            webbrowser.open_new_tab(f"file://{html_file_path}")
+        else:
+            messagebox.showerror("Error", f"File not found: {html_file_path}")
+
+    def show_user_clubs_page(self):
+        self.clear_page()
+        
+        self.user_clubs_frame = ctk.CTkFrame(self)
+        self.user_clubs_frame.pack(expand=True, fill='both')
+        clubs = Clubs()
+        user_club = UserClub()
+
+        clubs_info = clubs.select_club()
+        
+        for club in clubs_info:
+            user_club_frame = ctk.CTkFrame(self.user_clubs_frame)
+            user_club_frame.pack(pady=5, padx=10, fill='x')
+            
+            name_label = ctk.CTkLabel(user_club_frame, text=club['name'])
+            name_label.pack(side='left', padx=10)
+            if(user_club.is_user_join_club(self.user_info['username'],club['club_code'])):
+                user_join_club = ctk.CTkButton(user_club_frame, text="Leave Club", command=lambda club_code=club['club_code']: self.user_club_join(club_code,True))
+                user_join_club.pack(side='right', padx=10)
+            else:
+                user_join_club = ctk.CTkButton(user_club_frame, text="Join Club", command=lambda club_code=club['club_code']: self.user_club_join(club_code,False))
+                user_join_club.pack(side='right', padx=10)
+        back_user_clubs_list_button = ctk.CTkButton(self.user_clubs_frame, text="Back to User Page", command=self.show_user_page)
+        back_user_clubs_list_button.pack(pady=10)
+        
+    def user_club_join(self,club_code,user_join_state):
+        user_club = UserClub()
+        if(user_join_state):
+            message = "Leave Club successful "
+            result = user_club.un_follow_club(self.user_info['username'],club_code)
+        else:
+            message = "Join Club successful "
+            result = user_club.follow_club(self.user_info['username'],club_code)
+        
+        if result:
+            messagebox.showinfo("Success", message)
+        else:
+            messagebox.showerror("Error", "join/leave Club failed")
+            
+        self.show_user_clubs_page()
+
 
 if __name__ == "__main__":
     app = MainApp()
