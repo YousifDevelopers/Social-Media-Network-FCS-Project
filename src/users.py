@@ -20,6 +20,7 @@ class Users:
 
     def update_user(self, username, user_info: dict):
         self.db.connect()
+        user_info['password'] = self.hash_password(user_info['password'])
         query = "UPDATE users SET name = %s, password = %s, is_admin = %s WHERE username = %s"
         values = (user_info['name'], user_info['password'], user_info['is_admin'], username)
         result = self.db.update_query(query, values)
@@ -62,7 +63,7 @@ class Users:
         self.db.disconnect()
         check_password = self.verify_password(user_info['password'],password)
         if(check_password):
-            return {"login":True,"Message":"","is_admin":user_info['is_admin']}
+            return {"login":True,"Message":"","is_admin":user_info['is_admin'],"user_info":user_info}
         else:
             return {"login":False,"Message":"Password not match"}
     
