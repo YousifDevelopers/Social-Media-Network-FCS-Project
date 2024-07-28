@@ -91,8 +91,25 @@ class MainApp(ctk.CTk):
         else:
             messagebox.showerror("Error", "Registration failed")
         
-        self.show_login_page() 
+    def show_statistics_page(self):
+        self.clear_page()
         
+        self.statistics_frame = ctk.CTkFrame(self)
+        self.statistics_frame.pack(expand=True, fill='both')
+        users = Users()
+        clubs = Clubs()
+        total_users = users.count_user()
+        total_clubs = clubs.count_club()
+        
+        users_label = ctk.CTkLabel(self.statistics_frame, text=f"Total Users: {total_users}")
+        users_label.pack(pady=10)
+        
+        clubs_label = ctk.CTkLabel(self.statistics_frame, text=f"Total Clubs: {total_clubs}")
+        clubs_label.pack(pady=10)
+        
+        back_button = ctk.CTkButton(self.statistics_frame, text="Back to Admin Page", command=self.show_admin_page)
+        back_button.pack(pady=10)
+
     def show_admin_page(self):
         self.clear_page()
         
@@ -102,6 +119,9 @@ class MainApp(ctk.CTk):
         self.update_profile_button = ctk.CTkButton(self.admin_frame, text="Update Profile", command=self.show_profile_page)
         self.update_profile_button.pack(pady=10)
         
+        self.statistics_button = ctk.CTkButton(self.admin_frame, text="Statistics", command=self.show_statistics_page)
+        self.statistics_button.pack(pady=10)
+                
         self.logout_button = ctk.CTkButton(self.admin_frame, text="Logout", command=self.logout)
         self.logout_button.pack(pady=10)
     
