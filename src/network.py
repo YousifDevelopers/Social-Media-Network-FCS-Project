@@ -70,3 +70,30 @@ class SocialNetwork(Graph):
         os.makedirs(folder_path, exist_ok=True)
         
         net.show(full_path)
+    def bfs(self, start_node):
+        return super().bfs(start_node)
+
+    def dfs(self, start_node):
+        return super().dfs(start_node)
+
+    def dijkstra(self, start_node, target_node):
+        return super().dijkstra(start_node, target_node)
+
+    def connected_components(self):
+        return super().connected_components()
+
+    def display_bfs(self, start_node):
+        bfs_result = self.bfs(start_node)
+        print(f"BFS from {start_node}: {bfs_result}")
+
+    def display_dfs(self, start_node):
+        dfs_result = self.dfs(start_node)
+        print(f"DFS from {start_node}: {dfs_result}")
+
+    def display_dijkstra(self, start_node, target_node):
+        path = self.dijkstra(start_node, target_node)
+        print(f"Shortest path from {start_node} to {target_node}: {path}")
+
+    def display_connected_components(self):
+        components = self.connected_components()
+        print(f"Connected components: {components}")
