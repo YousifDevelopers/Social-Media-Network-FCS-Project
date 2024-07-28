@@ -134,7 +134,24 @@ class MainApp(ctk.CTk):
         else:
             self.back_button = ctk.CTkButton(self.profile_frame, text="Back to Admin Page", command=self.show_admin_page)
         self.back_button.pack(pady=10)
+    
+    def update_profile(self):
+        username = self.pro_username.get()
+        password = self.pro_password.get()
+        name = self.pro_name.get()
+        values = { "name":name, "password":password, "is_admin":self.user_info['is_admin']}
+        user = Users()
+        if user.update_user(username,values):
+            messagebox.showinfo("Success", "Update Profile successful.")
+        else:
+            messagebox.showerror("Error", "Update Profile failed")
         
+    def logout(self):
+        self.is_login = False
+        self.user_info = {}
+        self.clear_page()
+        self.show_login_page()
+    
     def clear_page(self):
         for widget in self.winfo_children():
             widget.destroy()
