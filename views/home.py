@@ -201,17 +201,37 @@ class MainApp(ctk.CTk):
         else:
             messagebox.showerror("Error", "Update Profile failed")
         
+
     def show_manage_users_page(self):
         self.clear_page()
-        
-        self.manage_users_frame = ctk.CTkFrame(self)
-        self.manage_users_frame.pack(expand=True, fill='both')
-        user = Users()
 
+        # Create a frame for the canvas
+        self.canvas_frame = ctk.CTkFrame(self)
+        self.canvas_frame.pack(expand=True, fill='both')
+
+        # Create a canvas widget
+        self.canvas = ctk.CTkCanvas(self.canvas_frame, bg='white')
+        self.canvas.pack(side='left', fill='both', expand=True)
+
+        # Create a scrollbar widget
+        self.scrollbar = ctk.CTkScrollbar(self.canvas_frame, command=self.canvas.yview)
+        self.scrollbar.pack(side='right', fill='y')
+
+        # Configure the canvas to use the scrollbar
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        # Create a frame to contain the content and place it on the canvas
+        self.manage_users_frame = ctk.CTkFrame(self.canvas)
+        self.canvas.create_window((0, 0), window=self.manage_users_frame, anchor='nw')
+
+        # Bind the canvas resize event to update the scroll region
+        self.manage_users_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+
+        user = Users()
         user_list = user.select_user()
-        
+
         for user in user_list:
-            if(user['is_admin'] == 0 ):
+            if user['is_admin'] == 0:
                 user_frame = ctk.CTkFrame(self.manage_users_frame)
                 user_frame.pack(pady=5, padx=10, fill='x')
                 
@@ -220,9 +240,13 @@ class MainApp(ctk.CTk):
                 
                 delete_button = ctk.CTkButton(user_frame, text="Delete", command=lambda u=user['username']: self.delete_user(u))
                 delete_button.pack(side='right', padx=10)
-        
+
         back_button = ctk.CTkButton(self.manage_users_frame, text="Back to Admin Page", command=self.show_admin_page)
         back_button.pack(pady=10)
+
+
+
+
 
     def delete_user(self, username):
         confirm = messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete user {username}?")
@@ -237,29 +261,48 @@ class MainApp(ctk.CTk):
                 
     def show_manage_clubs_page(self):
         self.clear_page()
-        
-        self.manage_clubs_frame = ctk.CTkFrame(self)
-        self.manage_clubs_frame.pack(expand=True, fill='both')
-        clubs = Clubs()
 
+        # Create a frame for the canvas
+        self.canvas_frame = ctk.CTkFrame(self)
+        self.canvas_frame.pack(expand=True, fill='both')
+
+        # Create a canvas widget
+        self.canvas = ctk.CTkCanvas(self.canvas_frame, bg='white')
+        self.canvas.pack(side='left', fill='both', expand=True)
+
+        # Create a scrollbar widget
+        self.scrollbar = ctk.CTkScrollbar(self.canvas_frame, command=self.canvas.yview)
+        self.scrollbar.pack(side='right', fill='y')
+
+        # Configure the canvas to use the scrollbar
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        # Create a frame to contain the content and place it on the canvas
+        self.manage_clubs_frame = ctk.CTkFrame(self.canvas)
+        self.canvas.create_window((0, 0), window=self.manage_clubs_frame, anchor='nw')
+
+        # Bind the canvas resize event to update the scroll region
+        self.manage_clubs_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+
+        clubs = Clubs()
         clubs_info = clubs.select_club()
-        
+
         for club in clubs_info:
             club_frame = ctk.CTkFrame(self.manage_clubs_frame)
             club_frame.pack(pady=5, padx=10, fill='x')
-            
+
             name_label = ctk.CTkLabel(club_frame, text=club['name'])
             name_label.pack(side='left', padx=10)
-            
+
             delete_button = ctk.CTkButton(club_frame, text="Delete", command=lambda club_code=club['club_code']: self.delete_club(club_code))
             delete_button.pack(side='right', padx=10)
 
             update_button = ctk.CTkButton(club_frame, text="Update", command=lambda club_code=club['club_code']: self.update_club_page(club_code))
             update_button.pack(side='right', padx=10)
-        
+
         add_club_button = ctk.CTkButton(self.manage_clubs_frame, text="Add Club", command=self.update_club_page)
         add_club_button.pack(pady=10)
-        
+
         back_club_list_button = ctk.CTkButton(self.manage_clubs_frame, text="Back to Admin Page", command=self.show_admin_page)
         back_club_list_button.pack(pady=10)
         
@@ -363,8 +406,25 @@ class MainApp(ctk.CTk):
     def show_user_clubs_page(self):
         self.clear_page()
         
-        self.user_clubs_frame = ctk.CTkFrame(self)
-        self.user_clubs_frame.pack(expand=True, fill='both')
+        # Create a canvas and a scrollbar
+        self.canvas = tk.Canvas(self, borderwidth=0)
+        self.scrollbar = tk.Scrollbar(self, orient='vertical', command=self.canvas.yview)
+        
+        # Create a frame to hold the user clubs content
+        self.user_clubs_frame = ctk.CTkFrame(self.canvas)
+        
+        # Add the user_clubs_frame to the canvas
+        self.canvas.create_window((0, 0), window=self.user_clubs_frame, anchor='nw')
+        self.user_clubs_frame.bind('<Configure>', self.on_frame_configure)
+        
+        # Pack the canvas and scrollbar
+        self.canvas.pack(side='left', fill='both', expand=True)
+        self.scrollbar.pack(side='right', fill='y')
+        
+        # Configure canvas and scrollbar
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.config(command=self.canvas.yview)
+
         clubs = Clubs()
         user_club = UserClub()
 
@@ -376,15 +436,23 @@ class MainApp(ctk.CTk):
             
             name_label = ctk.CTkLabel(user_club_frame, text=club['name'])
             name_label.pack(side='left', padx=10)
-            if(user_club.is_user_join_club(self.user_info['username'],club['club_code'])):
-                user_join_club = ctk.CTkButton(user_club_frame, text="Leave Club", command=lambda club_code=club['club_code']: self.user_club_join(club_code,True))
+            if(user_club.is_user_join_club(self.user_info['username'], club['club_code'])):
+                user_join_club = ctk.CTkButton(user_club_frame, text="Leave Club", command=lambda club_code=club['club_code']: self.user_club_join(club_code, True))
                 user_join_club.pack(side='right', padx=10)
             else:
-                user_join_club = ctk.CTkButton(user_club_frame, text="Join Club", command=lambda club_code=club['club_code']: self.user_club_join(club_code,False))
+                user_join_club = ctk.CTkButton(user_club_frame, text="Join Club", command=lambda club_code=club['club_code']: self.user_club_join(club_code, False))
                 user_join_club.pack(side='right', padx=10)
+        
         back_user_clubs_list_button = ctk.CTkButton(self.user_clubs_frame, text="Back to User Page", command=self.show_user_page)
         back_user_clubs_list_button.pack(pady=10)
-        
+    def on_frame_configure(self, event):
+        # Update the scroll region of the canvas to encompass the full size of the frame
+        self.canvas.configure(scrollregion=self.canvas.bbox('all'))
+
+
+    def on_frame_configure(self, event):
+        self.canvas.configure(scrollregion=self.canvas.bbox('all'))
+
     def user_club_join(self,club_code,user_join_state):
         user_club = UserClub()
         if(user_join_state):
