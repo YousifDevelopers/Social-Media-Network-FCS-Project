@@ -32,6 +32,12 @@ class Users:
         query = "DELETE FROM users where username = %s"
         values = (username,)
         result = self.db.delete_query(query, values)
+        query = "DELETE FROM user_followers where from_user = %s or to_user = %s"
+        values = (username,username)
+        result = self.db.delete_query(query, values)
+        query = "DELETE FROM user_club where username = %s"
+        values = (username,)
+        result = self.db.delete_query(query, values)
         self.db.disconnect()
         return result
 
