@@ -59,3 +59,18 @@ class UserFollow:
         result = self.db.select_query(query)
         self.db.disconnect()
         return result
+
+    def Suggestions_base_on_Followers_Followers(self,from_user):
+        self.db.connect()
+        where = ''
+        if(from_user == ''):
+            return
+        query = f"""SELECT DISTINCT uf2.to_user AS suggested_user
+FROM user_followers uf1
+JOIN user_followers uf2 ON uf1.to_user = uf2.from_user
+WHERE uf1.from_user = '{from_user}'
+  AND uf2.to_user != '{from_user}';
+ """
+        result = self.db.select_query(query)
+        self.db.disconnect()
+        return result
