@@ -124,8 +124,8 @@ class MainApp(ctk.CTk):
         self.join_club_button = ctk.CTkButton(self.user_frame, text="Join Club", command=self.show_user_clubs_page)
         self.join_club_button.pack(pady=10)
         
-        # self.follow_user_button = ctk.CTkButton(self.user_frame, text="Follow User", command=self.follow_user)
-        # self.follow_user_button.pack(pady=10)
+        self.follow_user_button = ctk.CTkButton(self.user_frame, text="Follow User", command=self.show_follow_user_page)
+        self.follow_user_button.pack(pady=10)
                 
         # self.stats_button = ctk.CTkButton(self.user_frame, text="Statistics", command=self.show_statistics)
         # self.stats_button.pack(pady=10)
@@ -243,10 +243,6 @@ class MainApp(ctk.CTk):
 
         back_button = ctk.CTkButton(self.manage_users_frame, text="Back to Admin Page", command=self.show_admin_page)
         back_button.pack(pady=10)
-
-
-
-
 
     def delete_user(self, username):
         confirm = messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete user {username}?")
@@ -445,10 +441,10 @@ class MainApp(ctk.CTk):
         
         back_user_clubs_list_button = ctk.CTkButton(self.user_clubs_frame, text="Back to User Page", command=self.show_user_page)
         back_user_clubs_list_button.pack(pady=10)
+    
     def on_frame_configure(self, event):
         # Update the scroll region of the canvas to encompass the full size of the frame
         self.canvas.configure(scrollregion=self.canvas.bbox('all'))
-
 
     def on_frame_configure(self, event):
         self.canvas.configure(scrollregion=self.canvas.bbox('all'))
@@ -469,6 +465,44 @@ class MainApp(ctk.CTk):
             
         self.show_user_clubs_page()
 
+    def show_follow_user_page(self):
+        self.clear_page()
+        
+        # Create a canvas and a scrollbar
+        self.canvas = tk.Canvas(self, borderwidth=0)
+        self.scrollbar = tk.Scrollbar(self, orient='vertical', command=self.canvas.yview)
+        
+        # Create a frame to hold the user clubs content
+        self.follow_user_frame = ctk.CTkFrame(self.canvas)
+        
+        # Add the follow_user_frame to the canvas
+        self.canvas.create_window((0, 0), window=self.follow_user_frame, anchor='nw')
+        self.follow_user_frame.bind('<Configure>', self.on_frame_configure)
+        
+        # Pack the canvas and scrollbar
+        self.canvas.pack(side='left', fill='both', expand=True)
+        self.scrollbar.pack(side='right', fill='y')
+        
+        # Configure canvas and scrollbar
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.config(command=self.canvas.yview)
+
+        user_follow = UserFollow()
+
+        user_follows_info = user_follow.Suggestions_base_on_Followers_Followers(self.user_info['username'])
+        
+        for user_follow in user_follows_info:
+            user_follow_frame = ctk.CTkFrame(self.follow_user_frame)
+            user_follow_frame.pack(pady=5, padx=10, fill='x')
+            
+            name_label = ctk.CTkLabel(user_follow_frame, text=user_follow['suggested_user'])
+            name_label.pack(side='left', padx=10)
+            user_join_club = ctk.CTkButton(user_follow_frame, text="Follow user", command=lambda to_user=user_follow['suggested_user']: self.user_follow(to_user))
+            user_join_club.pack(side='right', padx=10)
+        
+        back_user_clubs_list_button = ctk.CTkButton(self.follow_user_frame, text="Back to User Page", command=self.show_user_page)
+        back_user_clubs_list_button.pack(pady=10)
+    
 
 if __name__ == "__main__":
     app = MainApp()
