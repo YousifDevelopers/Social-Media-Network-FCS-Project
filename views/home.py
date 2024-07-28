@@ -121,7 +121,10 @@ class MainApp(ctk.CTk):
         
         self.statistics_button = ctk.CTkButton(self.admin_frame, text="Statistics", command=self.show_statistics_page)
         self.statistics_button.pack(pady=10)
-                
+    
+        self.manage_users_button = ctk.CTkButton(self.admin_frame, text="Manage Users", command=self.show_manage_users_page)
+        self.manage_users_button.pack(pady=10)
+        
         self.logout_button = ctk.CTkButton(self.admin_frame, text="Logout", command=self.logout)
         self.logout_button.pack(pady=10)
     
@@ -166,6 +169,40 @@ class MainApp(ctk.CTk):
         else:
             messagebox.showerror("Error", "Update Profile failed")
         
+    def show_manage_users_page(self):
+        self.clear_page()
+        
+        self.manage_users_frame = ctk.CTkFrame(self)
+        self.manage_users_frame.pack(expand=True, fill='both')
+        user = Users()
+
+        user_list = user.select_user()
+        
+        for user in user_list:
+            if(user['is_admin'] == 0 ):
+                user_frame = ctk.CTkFrame(self.manage_users_frame)
+                user_frame.pack(pady=5, padx=10, fill='x')
+                
+                username_label = ctk.CTkLabel(user_frame, text=user['username'])
+                username_label.pack(side='left', padx=10)
+                
+                delete_button = ctk.CTkButton(user_frame, text="Delete", command=lambda u=user['username']: self.delete_user(u))
+                delete_button.pack(side='right', padx=10)
+        
+        back_button = ctk.CTkButton(self.manage_users_frame, text="Back to Admin Page", command=self.show_admin_page)
+        back_button.pack(pady=10)
+
+    def delete_user(self, username):
+        confirm = messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete user {username}?")
+        if confirm:
+            user = Users()
+            result = user.delete_user(username)
+            if result:
+                messagebox.showinfo("Success", f"User {username} deleted successfully.")
+                self.show_manage_users_page()
+            else:
+                messagebox.showerror("Error", f"Failed to delete user {username}.")
+
     def logout(self):
         self.is_login = False
         self.user_info = {}
